@@ -730,6 +730,186 @@ we  can see from plot with only one run we can see red points are fairly disting
 
 we can run it multiple times with different value of no steps and perplexity to get better plot 
 
+Now lets apply TFIDF vectorizer on text features to convert them into vectors and normalizer on numeric features 
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import re
+import time
+import warnings
+import numpy as np
+from nltk.corpus import stopwords
+from sklearn.preprocessing import normalize
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+warnings.filterwarnings("ignore")
+import sys
+import os 
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
+```
+
+```python
+df = pd.read_csv("nlp_features_train.csv")
+
+#converting questions in unicode  format as python handles strings in that format
+df['question1'] = df['question1'].apply(lambda x: str(x))
+df['question2'] = df['question2'].apply(lambda x: str(x))
+```
+
+Droping is_duplicate feature from dataset and placing it on other variable 
+
+
+```python
+y = df['is_duplicate'].values
+x = df.drop(['is_duplicate'],axis = 1)
+```
+train test split 
+
+```python
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.33, stratify=y)
+X_train, X_cv, y_train, y_cv = train_test_split(X_train, y_train, test_size=0.33, stratify=y_train)
+```
+Applying vectorizer on both text features question 1 and question 2
+
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+#questions1 = list(df['question1'].values)
+#questions2 = list(df['question2'].values)
+tfidf = TfidfVectorizer(lowercase=False )
+tfidf.fit(X_train['question1'].values)
+quest1_train = tfidf.transform(X_train['question1'].values) 
+quest1_cv = tfidf.transform(X_cv['question1'].values)
+quest1_test = tfidf.transform(X_test['question1'].values)
+
+tfidf2 = TfidfVectorizer(lowercase=False )
+tfidf2.fit(X_train['question2'].values)
+quest2_train = tfidf2.transform(X_train['question2'].values)
+quest2_cv = tfidf2.transform(X_cv['question2'].values)
+quest2_test = tfidf2.transform(X_test['question2'].values)
+```
+Normalizing numerical features 
+
+```python
+from sklearn.preprocessing import Normalizer
+normalizer1 = Normalizer()
+normalizer1.fit(X_train['cwc_min'].values.reshape(-1,1))
+cwc_train = normalizer1.transform(X_train['cwc_min'].values.reshape(-1,1))
+cwc_cv = normalizer1.transform(X_cv['cwc_min'].values.reshape(-1,1))
+cwc_test = normalizer1.transform(X_test['cwc_min'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer2 = Normalizer()
+normalizer2.fit(X_train['cwc_max'].values.reshape(-1,1))
+cwcmax_train = normalizer2.transform(X_train['cwc_max'].values.reshape(-1,1))
+cwcmax_cv = normalizer2.transform(X_cv['cwc_max'].values.reshape(-1,1))
+cwcmax_test = normalizer2.transform(X_test['cwc_max'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer3 = Normalizer()
+normalizer3.fit(X_train['csc_min'].values.reshape(-1,1))
+csc_min_train = normalizer3.transform(X_train['csc_min'].values.reshape(-1,1))
+csc_min_cv = normalizer3.transform(X_cv['csc_min'].values.reshape(-1,1))
+csc_min_test = normalizer3.transform(X_test['csc_min'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer4 = Normalizer()
+normalizer4.fit(X_train['csc_max'].values.reshape(-1,1))
+csc_max_train = normalizer4.transform(X_train['csc_max'].values.reshape(-1,1))
+csc_max_cv = normalizer4.transform(X_cv['csc_max'].values.reshape(-1,1))
+csc_max_test = normalizer4.transform(X_test['csc_max'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer5 = Normalizer()
+normalizer5.fit(X_train['ctc_min'].values.reshape(-1,1))
+ctc_min_train = normalizer5.transform(X_train['ctc_min'].values.reshape(-1,1))
+ctc_min_cv = normalizer5.transform(X_cv['ctc_min'].values.reshape(-1,1))
+ctc_min_test = normalizer5.transform(X_test['ctc_min'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer6 = Normalizer()
+normalizer6.fit(X_train['ctc_max'].values.reshape(-1,1))
+ctc_max_train = normalizer6.transform(X_train['ctc_max'].values.reshape(-1,1))
+ctc_max_cv = normalizer6.transform(X_cv['ctc_max'].values.reshape(-1,1))
+ctc_max_test = normalizer6.transform(X_test['ctc_max'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer7 = Normalizer()
+normalizer7.fit(X_train['last_word_eq'].values.reshape(-1,1))
+last_word_eq_train = normalizer7.transform(X_train['last_word_eq'].values.reshape(-1,1))
+last_word_eq_cv = normalizer7.transform(X_cv['last_word_eq'].values.reshape(-1,1))
+last_word_eq_test = normalizer7.transform(X_test['last_word_eq'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer8 = Normalizer()
+normalizer8.fit(X_train['first_word_eq'].values.reshape(-1,1))
+first_word_eq_train = normalizer8.transform(X_train['first_word_eq'].values.reshape(-1,1))
+first_word_eq_cv = normalizer8.transform(X_cv['first_word_eq'].values.reshape(-1,1))
+first_word_eq_test = normalizer8.transform(X_test['first_word_eq'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer9 = Normalizer()
+normalizer9.fit(X_train['abs_len_diff'].values.reshape(-1,1))
+abs_len_diff_train = normalizer9.transform(X_train['abs_len_diff'].values.reshape(-1,1))
+abs_len_diff_cv = normalizer9.transform(X_cv['abs_len_diff'].values.reshape(-1,1))
+abs_len_diff_test = normalizer9.transform(X_test['abs_len_diff'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer10 = Normalizer()
+normalizer10.fit(X_train['mean_len'].values.reshape(-1,1))
+mean_len_train = normalizer10.transform(X_train['mean_len'].values.reshape(-1,1))
+mean_len_cv = normalizer10.transform(X_cv['mean_len'].values.reshape(-1,1))
+mean_len_test = normalizer10.transform(X_test['mean_len'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer11 = Normalizer()
+normalizer11.fit(X_train['token_set_ratio'].values.reshape(-1,1))
+token_set_ratio_train = normalizer11.transform(X_train['token_set_ratio'].values.reshape(-1,1))
+token_set_ratio_cv = normalizer11.transform(X_cv['token_set_ratio'].values.reshape(-1,1))
+token_set_ratio_test = normalizer11.transform(X_test['token_set_ratio'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer12 = Normalizer()
+normalizer12.fit(X_train['token_sort_ratio'].values.reshape(-1,1))
+token_sort_ratio_train = normalizer12.transform(X_train['token_sort_ratio'].values.reshape(-1,1))
+token_sort_ratio_cv = normalizer12.transform(X_cv['token_sort_ratio'].values.reshape(-1,1))
+token_sort_ratio_test = normalizer12.transform(X_test['token_sort_ratio'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer13 = Normalizer()
+normalizer13.fit(X_train['fuzz_ratio'].values.reshape(-1,1))
+fuzz_ratio_train = normalizer13.transform(X_train['fuzz_ratio'].values.reshape(-1,1))
+fuzz_ratio_cv = normalizer13.transform(X_cv['fuzz_ratio'].values.reshape(-1,1))
+fuzz_ratio_test = normalizer13.transform(X_test['fuzz_ratio'].values.reshape(-1,1))
+
+from sklearn.preprocessing import Normalizer
+normalizer14 = Normalizer()
+normalizer14.fit(X_train['fuzz_partial_ratio'].values.reshape(-1,1))
+fuzz_partial_ratio_train = normalizer14.transform(X_train['fuzz_partial_ratio'].values.reshape(-1,1))
+fuzz_partial_ratio_cv = normalizer14.transform(X_cv['fuzz_partial_ratio'].values.reshape(-1,1))
+fuzz_partial_ratio_test = normalizer14.transform(X_test['fuzz_partial_ratio'].values.reshape(-1,1))
+```
+Stacking all the features together again after vectorization 
+
+```python
+from scipy.sparse import hstack
+X_tr = hstack((quest1_train,quest2_train,cwc_train,cwcmax_train,csc_min_train,csc_max_train,ctc_min_train,ctc_max_train,last_word_eq_train,first_word_eq_train,abs_len_diff_train,mean_len_train,token_set_ratio_train,token_sort_ratio_train,fuzz_ratio_train,fuzz_partial_ratio_train)).tocsr()
+X_cv = hstack((quest1_cv,quest2_cv,cwc_cv,cwcmax_cv,csc_min_cv,csc_max_cv,ctc_min_cv,ctc_max_cv,last_word_eq_cv,first_word_eq_cv,abs_len_diff_cv,mean_len_cv,token_set_ratio_cv,token_sort_ratio_cv,fuzz_ratio_cv,fuzz_partial_ratio_cv)).tocsr()
+X_te = hstack((quest1_test,quest2_test,cwc_test,cwcmax_test,csc_min_test,csc_max_test,ctc_min_test,ctc_max_test,last_word_eq_test,first_word_eq_test,abs_len_diff_test,mean_len_test,token_set_ratio_test,token_sort_ratio_test,fuzz_ratio_test,fuzz_partial_ratio_test)).tocsr()
+```
+
+Applying logistic regression model on train data 
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+model = LogisticRegression()
+model.fit(X_tr, y_train)
+```
 
 
 
