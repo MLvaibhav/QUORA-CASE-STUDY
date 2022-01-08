@@ -907,9 +907,54 @@ Applying logistic regression model on train data
 ```python
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-model = LogisticRegression()
-model.fit(X_tr, y_train)
+from sklearn.metrics.classification import accuracy_score, log_loss
+from sklearn.linear_model import SGDClassifier
+from sklearn.calibration import CalibratedClassifierCV
+#model = LogisticRegression()
+#model.fit(X_tr, y_train)
+alpha = [10 ** x for x in range(-6, 3)]
+cv_log_error_array = []
+for i in alpha:
+    print("for alpha =", i)
+    clf = SGDClassifier(class_weight='balanced', alpha=i, penalty='l2', loss='log', random_state=42)
+    clf.fit(X_tr, y_train)
+    sig_clf = CalibratedClassifierCV(clf, method="sigmoid")
+    sig_clf.fit(X_tr, y_train)
+    sig_clf_probs = sig_clf.predict_proba(X_cv)
+    cv_log_error_array.append(log_loss(y_cv, sig_clf_probs, labels=clf.classes_, eps=1e-15))
+    # to avoid rounding error while multiplying probabilites we use log-probability estimates
+    print("Log Loss :",log_loss(y_cv, sig_clf_probs))
 ```
 
+for alpha = 1e-06
+Log Loss : 0.45405238196864106
+for alpha = 1e-05
+Log Loss : 0.4465275697344375
+for alpha = 0.0001
+Log Loss : 0.4662334234106437
+for alpha = 0.001
+Log Loss : 0.5123130640296748
+for alpha = 0.01
+Log Loss : 0.5607593063636392
+for alpha = 0.1
+Log Loss : 0.5803403394348411
+for alpha = 1
+Log Loss : 0.5836654716949035
+for alpha = 10
+Log Loss : 0.5817714095459336
+for alpha = 100
+Log Loss : 0.5813038505124879
 
+```python
+clf = SGDClassifier(class_weight='balanced', alpha=0.0001, penalty='l2', loss='log', random_state=42)
+clf.fit(X_tr, y_train)
+test_point_index = 10
+no_feature = 500
+predicted_cls = sig_clf.predict(X_te[test_point_index])
+print("Predicted Class :", predicted_cls[0])
+print("Predicted Class Probabilities:", np.round(sig_clf.predict_proba(X_te[test_point_index]),4))
+print("Actual Class :", y_train[test_point_index])
+indices = np.argsort(-1*abs(clf.coef_))[predicted_cls-1][:,:no_feature]
+print("-"*50)
+```
 
