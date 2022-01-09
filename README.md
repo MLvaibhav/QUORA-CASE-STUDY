@@ -701,48 +701,7 @@ plt.show()
 
 From above plot we can see as the token_sort_ratio increases duplcacy increases , there is a overlap but still this feature is important .
 
-As we have 15 features if we can visualize all of them to see outcome that will be great here comes the use of Data Visualization using TSNE.
-
-What TSNE does is it embeds 15 dimentional to smaller dimension while preserving distance between only neighborhood points.
-
-we will reduce 15 dimentional data into 2 dimension and then visualse it 
-
-```python
-# Using TSNE for Dimentionality reduction for 15 Features(Generated after cleaning the data) to 3 dimention
-
-from sklearn.preprocessing import MinMaxScaler
-
-dfp_subsampled = df[0:5000]
-X = MinMaxScaler().fit_transform(dfp_subsampled[['cwc_min', 'cwc_max', 'csc_min', 'csc_max' , 'ctc_min' , 'ctc_max' , 'last_word_eq', 'first_word_eq' , 'abs_len_diff' , 'mean_len' , 'token_set_ratio' , 'token_sort_ratio' ,  'fuzz_ratio' , 'fuzz_partial_ratio' , 'longest_substr_ratio']])
-y = dfp_subsampled['is_duplicate'].values
-```
-```python
-tsne2d = TSNE(
-    n_components=2,
-    init='random', # pca
-    random_state=101,
-    method='barnes_hut',
-    n_iter=1000,
-    verbose=2,
-    angle=0.5
-).fit_transform(X)
-```
-
-```python
-df = pd.DataFrame({'x':tsne2d[:,0], 'y':tsne2d[:,1] ,'label':y})
-
-# draw the plot in appropriate place in the grid
-sns.lmplot(data=df, x='x', y='y', hue='label', fit_reg=False, size=8,palette="Set1",markers=['s','o'])
-plt.title("perplexity : {} and max_iter : {}".format(30, 1000))
-plt.show()
-```
-![Screen Shot 2021-10-18 at 10 27 53 AM](https://user-images.githubusercontent.com/90976062/137671645-57138d3b-91e1-495d-a0b4-6d76083d473c.png)
-
-perplexity is no of neighbor whose distance want to preserve 
-
-we  can see from plot with only one run we can see red points are fairly distinguishable at many spots in plot making our 15 feature useful .
-
-we can run it multiple times with different value of no steps and perplexity to get better plot 
+ 
 
 Now lets apply TFIDF vectorizer on text features to convert them into vectors and normalizer on numeric features 
 
