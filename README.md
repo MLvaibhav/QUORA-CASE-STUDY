@@ -566,6 +566,8 @@ def extract_features(df):
     # do read this blog: http://chairnerd.seatgeek.com/fuzzywuzzy-fuzzy-string-matching-in-python/
     # https://stackoverflow.com/questions/31806695/when-to-use-which-fuzz-function-to-compare-2-strings
     # https://github.com/seatgeek/fuzzywuzzy
+    #using fuzzy wuzzy library we can use below mention function to get below features 
+    
     print("fuzzy features..")
 
     df["token_set_ratio"]       = df.apply(lambda x: fuzz.token_set_ratio(x["question1"], x["question2"]), axis=1)
