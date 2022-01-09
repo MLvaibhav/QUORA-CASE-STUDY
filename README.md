@@ -371,14 +371,21 @@ def preprocess(x):
     x = re.sub(r"([0-9]+)000000", r"\1m", x)
     x = re.sub(r"([0-9]+)000", r"\1k", x)
     
-    
+   #re.complile used to remove speacial characters like $
+   #https://stackoverflow.com/questions/50888683/meaning-of-re-compiler-w-in-python/50888763 
+   
     porter = PorterStemmer()
     pattern = re.compile('\W')
-    
+   
+   #here if type of x is same as ('') that is string then replace pattern(that has special characters) with space in x
+   
     if type(x) == type(''):
         x = re.sub(pattern, ' ', x)
     
-    
+  #its stemming the word stemming means changing word into its root form
+   #https://www.geeksforgeeks.org/python-stemming-words-with-nltk/
+  
+  
     if type(x) == type(''):
         x = porter.stem(x)
         example1 = BeautifulSoup(x)
