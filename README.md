@@ -483,6 +483,8 @@ longest_substr_ratio = len(longest common substring) / (min(len(q1_tokens), len(
 
 ```python
 def get_token_features(q1, q2):
+
+#intializing empty array with size = 10
     token_features = [0.0]*10
     
     # Converting the Sentence into Tokens: 
