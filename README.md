@@ -216,6 +216,9 @@ else:
     df['q2_n_words'] = df['question2'].apply(lambda row: len(row.split(" ")))
 #below function will get yu common words in both questions firstly w1 and w2 are set of words in lowercase 
 # and we return intersection of both sets of words that will result in common words between both.
+
+#.strip() method removes any leading (spaces at the beginning) and trailing (spaces at the end) characters (space is the default leading character to remove)
+
     def normalized_word_Common(row):
         w1 = set(map(lambda word: word.lower().strip(), row['question1'].split(" ")))
         w2 = set(map(lambda word: word.lower().strip(), row['question2'].split(" ")))    
